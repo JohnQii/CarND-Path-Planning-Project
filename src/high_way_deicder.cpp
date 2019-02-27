@@ -12,7 +12,7 @@ HighWayDecider::HighWayDecider(const double ego_s,
 {
   ego_info_.s = ego_s;
   ego_info_.d = ego_d;
-  ego_info_.speed = ego_speed;
+  ego_info_.speed = ego_speed / 2.24; //transform from mph to m/s
   if(ego_d < 0) {
     //if ego_d < 0, it drive to the revise lane, it's an error.
     ego_info_.lane = -1;
@@ -60,7 +60,7 @@ bool HighWayDecider::hasBlockingByOthers() {
     if(d <= (2 + 4*ego_info_.lane + 2) && d >= (2 + 4*ego_info_.lane - 2)) {
       double vx = sensor_fusion_[i][3];
       double vy = sensor_fusion_[i][4];
-      double check_speed = sqrt(vx*vx + vy*vy);
+      double check_speed = sqrt(vx*vx + vy*vy); // in m/s
       double check_car_s = sensor_fusion_[i][5];
 
       check_car_s += (double)(pre_size_ * 0.02 * check_speed);
