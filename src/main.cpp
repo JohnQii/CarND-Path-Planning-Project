@@ -118,6 +118,8 @@ int main() {
 
           if(need_slow_down && change_line_type == ChangeLineType::None)
             ref_speed -= 0.224; //mph
+          else if(change_line_type != ChangeLineType::None && ref_speed > 40.)
+            ref_speed -= 0.224; //mph
           else if(ref_speed < 49.5)
             ref_speed += 0.224;
           std::cout << "ref_speed/mph: " << ref_speed <<std::endl;

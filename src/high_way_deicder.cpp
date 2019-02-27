@@ -32,11 +32,11 @@ ChangeLineType HighWayDecider::changeLineDecider() {
 
   std::vector<double> blocking_obstale = getNearestBlockingSpeed();
 
-  if(ego_info_.s - blocking_obstale[0] > 60)
+  if(blocking_obstale[0] - ego_info_.s > 30)
     return ChangeLineType::None;
   //check the speed difference between the nearest blocking cars.
   //only speed difference is bigger than 5 mph, we change line.
-  if(speed_limit_ - blocking_obstale[1] > 3) {
+  if(speed_limit_ - blocking_obstale[1] > 2) {
     //first, we choose left lane to changline.
     //Because in china, we always only allow overtake the car in the left
     if(isChangeLineSafe(ChangeLineType::Left))
@@ -64,11 +64,13 @@ bool HighWayDecider::hasBlockingByOthers() {
       double check_car_s = sensor_fusion_[i][5];
 
       check_car_s += (double)(pre_size_ * 0.02 * check_speed);
-      if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 30)) {
-        //ref_speed = 29.5;
+      //the blocking distance is 50m
+      if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 50)) {
         blocking_obstacles_.push_back(sensor_fusion_[i]);
       }
-      if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 30) && ego_info_.speed > check_speed)
+      //the distance to slow down is 30;
+      if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 30) &&  //
+         (ego_info_.speed > check_speed || (check_car_s - ego_info_.s) < 15)) //to keep the same speed and aat least 15m.
         has_blocking = true;
     }
   }
@@ -108,7 +110,14 @@ bool HighWayDecider::isChangeLineSafe(ChangeLineType change_line_type) {
       double check_car_s = sensor_fusion_[i][5];
 
       check_car_s += (double)(pre_size_ * 0.02 * check_speed);
-      double min_forward_distance = 10,
+      if(blocking_obstacle_.size() > 0) {
+        if(blocking_obstacle_[1] - check_speed > 1.5 &&
+           check_car_s - blocking_obstacle_[0] > 0.0 &&
+           check_car_s - blocking_obstacle_[0] < 25){
+          return false;
+        }
+      }
+      double min_forward_distance = 15,
           min_backward_distance = 10;
       double forward_safe_distance = min_forward_distance;
       double backward_safe_distance = min_backward_distance;
@@ -122,7 +131,6 @@ bool HighWayDecider::isChangeLineSafe(ChangeLineType change_line_type) {
         backward_safe_distance = min_backward_distance;
 
       if((check_car_s - ego_info_.s < forward_safe_distance) && ((ego_info_.s - check_car_s) < backward_safe_distance)) {
-        //ref_speed = 29.5;
         return false;
       }
     }
@@ -135,15 +143,19 @@ std::vector<double> HighWayDecider::getNearestBlockingSpeed() {
   double min_s = 100000; //the max s in map is 6548.
   double min_speed = 0;
   for(uint i = 0; i < blocking_obstacles_.size(); ++i) {
-    if(blocking_obstacles_[i][5] > min_s) {
-      min_s = blocking_obstacles_[i][5];
-      double vx = sensor_fusion_[i][3];
-      double vy = sensor_fusion_[i][4];
-      double check_speed = sqrt(vx*vx + vy*vy);
+    double vx = sensor_fusion_[i][3];
+    double vy = sensor_fusion_[i][4];
+    double check_speed = sqrt(vx*vx + vy*vy);
+    double check_s = blocking_obstacles_[i][5] + (double)(pre_size_ * 0.02 * check_speed);
+    if(check_s < min_s) {
+      min_s = check_s;
       min_speed = check_speed;
     }
   }
   std::vector<double> result;
+  blocking_obstacle_.clear();
+  blocking_obstacle_.push_back(min_s);
+  blocking_obstacle_.push_back(min_speed);
   result.push_back(min_s);
   result.push_back(min_speed);
   return result;

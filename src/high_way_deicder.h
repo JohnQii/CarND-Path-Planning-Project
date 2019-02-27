@@ -52,6 +52,8 @@ private:
   //in global coordinate.
   std::vector<std::vector<double> > sensor_fusion_;
   std::vector<std::vector<double> > blocking_obstacles_;
+  //the nearest blocking obstacle
+  std::vector<double> blocking_obstacle_;
 };
 
 #endif // CHANGE_LINE_SAFTEY_H
