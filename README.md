@@ -1,6 +1,19 @@
 # CarND-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program, the project from udacity! It's so great.
 We get the original project from [udacity](https://github.com/udacity/CarND-Path-Planning-Project)
+And I finish it with below steps:
+### 1. Make the change line decider.
+Just as a behavior planner(FSM), I only use few states to record the car's current. And make the decision that the car should change to left line, right line or non. It's decided by the speed of obstacle which block our cars, the safe distance of left/right line. And the left line has higher priority.
+### 2. Limit the speed by safe distance and speed differences.
+Get the speed limit by the obstacle which is front of the ego, and the speed is lower than ego's speed. And we will slow down when change line.
+### 3. Get anchor points and transfrom it to local coordinate.
+Get the anchors points in every 30m, and transform the anchor point to local coordinate. 
+### 4. Get cubic spline.
+Get the cubic spline by `spline` [lib](https://kluge.in-chemnitz.de/opensource/spline/)
+### 5. Get final path points.
+Use the speed to calculate distance between two points, and publish the path by Json.
+Here is some results:
+
 ### Simulator.
 I download the simulator from [udacity]((https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2))
 
@@ -28,6 +41,8 @@ In this project, I achieve the above goals. But I think we had many shortages wh
 2. Speed planning is very important in the motion planning, and I didn't achieve it.
 3. The envirment don't has static obstacles, such as conical buckets.
 4. The obstacle in the program is only a point, and not a rectangle.
+5. THe decider is very simple, only can deal with simple scene.
+
 
 ## Basic Build Instructions
 
@@ -117,3 +132,6 @@ A really helpful resource for doing this project and creating smooth trajectorie
 
 Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
 
+[//]: # (Image References)
+[successful_image1]: ./data/pictures1.png
+[successful_image2]: ./data/pictures2.png
