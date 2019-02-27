@@ -25,18 +25,18 @@ HighWayDecider::HighWayDecider(const double ego_s,
 
 ChangeLineType HighWayDecider::changeLineDecider() {
   //need to change line or not.
-  if(!hasBlockingByOthers())
-    return ChangeLineType::None;
+  //  if(!hasBlockingByOthers())
+  //    return ChangeLineType::None;
   if(blocking_obstacles_.size() <= 0)
     return ChangeLineType::None;
 
   std::vector<double> blocking_obstale = getNearestBlockingSpeed();
 
-  if(ego_info_.s - blocking_obstale[0] > 50)
+  if(ego_info_.s - blocking_obstale[0] > 60)
     return ChangeLineType::None;
   //check the speed difference between the nearest blocking cars.
   //only speed difference is bigger than 5 mph, we change line.
-  if(speed_limit_ - blocking_obstale[1] > 5) {
+  if(speed_limit_ - blocking_obstale[1] > 3) {
     //first, we choose left lane to changline.
     //Because in china, we always only allow overtake the car in the left
     if(isChangeLineSafe(ChangeLineType::Left))
@@ -66,9 +66,10 @@ bool HighWayDecider::hasBlockingByOthers() {
       check_car_s += (double)(pre_size_ * 0.02 * check_speed);
       if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 30)) {
         //ref_speed = 29.5;
-        has_blocking = true;
         blocking_obstacles_.push_back(sensor_fusion_[i]);
       }
+      if((check_car_s > ego_info_.s) && ((check_car_s - ego_info_.s) < 30) && ego_info_.speed > check_speed)
+        has_blocking = true;
     }
   }
   return has_blocking;

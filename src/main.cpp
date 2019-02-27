@@ -107,32 +107,16 @@ int main() {
                                           pre_size, sensor_fusion, speed_limit_from_map);
           need_slow_down = high_way_decider.hasBlockingByOthers();
           ChangeLineType change_line_type = high_way_decider.changeLineDecider();
+          int current_lane = (floor)(car_d / 4.);
+          double aim_lane;
           if(change_line_type == ChangeLineType::Left && lane > 0)
-            lane = lane - 1;
+            aim_lane = current_lane - 1;
           else if(change_line_type == ChangeLineType::Right && lane < 2)
-            lane += 1;
+            aim_lane = current_lane + 1;
           else
-            lane = lane;
-//          for(uint i = 0; i < sensor_fusion.size(); ++i) {
-//            float d = sensor_fusion[i][6];
-//            if(d < (2 + 4*lane + 2) && d > (2 + 4*lane - 2)) {
-//              double vx = sensor_fusion[i][3];
-//              double vy = sensor_fusion[i][4];
-//              double check_speed = sqrt(vx*vx + vy*vy);
-//              double check_car_s = sensor_fusion[i][5];
+            aim_lane = current_lane;
 
-//              check_car_s += (double)(pre_size * 0.02 * check_speed);
-//              if((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
-//                //ref_speed = 29.5;
-//                too_close = true;
-//                if(lane > 0) {
-//                  lane = 0;
-//                }
-//              }
-//            }
-//          }
-
-          if(need_slow_down)
+          if(need_slow_down && change_line_type == ChangeLineType::None)
             ref_speed -= 0.224; //mph
           else if(ref_speed < 49.5)
             ref_speed += 0.224;
@@ -169,11 +153,11 @@ int main() {
             pts_y.push_back(ref_y);
           }
           vector<double> next_ref0 =
-              getXY(car_s + 30., 2 + 4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+              getXY(car_s + 30., 2 + 4*aim_lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_ref1 =
-              getXY(car_s + 60., 2 + 4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+              getXY(car_s + 60., 2 + 4*aim_lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_ref2 =
-              getXY(car_s + 90., 2 + 4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+              getXY(car_s + 90., 2 + 4*aim_lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
           pts_x.push_back(next_ref0[0]);
           pts_x.push_back(next_ref1[0]);
