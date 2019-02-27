@@ -35,9 +35,15 @@ public:
    * @return is blocking by other slow car in the ego'lane.
    */
   bool hasBlockingByOthers();
-  bool isChangeLeftSafe();
-  bool isChangeRightSafe();
+  bool hasBlockingBySlowObstacles();
+  /**
+   * @brief isChangeLineSafe is change to left/right line is safe or not.
+   * @param change_line_type
+   * @return
+   */
+  bool isChangeLineSafe(ChangeLineType change_line_type);
 
+  std::vector<double> getNearestBlockingSpeed();
 private:
   double speed_limit_;
   //ego state
@@ -45,6 +51,7 @@ private:
   int pre_size_;
   //in global coordinate.
   std::vector<std::vector<double> > sensor_fusion_;
+  std::vector<std::vector<double> > blocking_obstacles_;
 };
 
 #endif // CHANGE_LINE_SAFTEY_H

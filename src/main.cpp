@@ -106,6 +106,13 @@ int main() {
           HighWayDecider high_way_decider(car_s, car_d, car_speed,
                                           pre_size, sensor_fusion, speed_limit_from_map);
           need_slow_down = high_way_decider.hasBlockingByOthers();
+          ChangeLineType change_line_type = high_way_decider.changeLineDecider();
+          if(change_line_type == ChangeLineType::Left && lane > 0)
+            lane = lane - 1;
+          else if(change_line_type == ChangeLineType::Right && lane < 2)
+            lane += 1;
+          else
+            lane = lane;
 //          for(uint i = 0; i < sensor_fusion.size(); ++i) {
 //            float d = sensor_fusion[i][6];
 //            if(d < (2 + 4*lane + 2) && d > (2 + 4*lane - 2)) {
