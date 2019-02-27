@@ -50,18 +50,18 @@ int main() {
     map_waypoints_dx.push_back(d_x);
     map_waypoints_dy.push_back(d_y);
   }
+  //start line
+  double lane = 1;
+
+  //initial speed
+  double ref_speed = 0; //mph
 
 
-
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy]
+  h.onMessage([&ref_speed, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+               &map_waypoints_dx,&map_waypoints_dy, &lane]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
-    //start line
-    double lane = 1;
 
-    //aim speed
-    double ref_speed = 49.5; //mph
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -97,6 +97,34 @@ int main() {
           auto sensor_fusion = j[1]["sensor_fusion"];
 
           int pre_size = previous_path_x.size();
+          if(pre_size > 0) {
+            car_s = end_path_s;
+          }
+
+          bool too_close = false;
+
+          for(uint i = 0; i < sensor_fusion.size(); ++i) {
+            float d = sensor_fusion[i][6];
+            if(d < (2 + 4*lane + 2) && d > (2 + 4*lane - 2)) {
+              double vx = sensor_fusion[i][3];
+              double vy = sensor_fusion[i][4];
+              double check_speed = sqrt(vx*vx + vy*vy);
+              double check_car_s = sensor_fusion[i][5];
+
+              check_car_s += (double)(pre_size * 0.02 * check_speed);
+              if((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+                //ref_speed = 29.5;
+                too_close = true;
+              }
+            }
+          }
+
+          if(too_close)
+            ref_speed -= 0.224; //mps
+          else if(ref_speed < 49.5)
+            ref_speed += 0.224;
+          std::cout << "ref_speed/mps: " << ref_speed <<std::endl;
+
           //the points for spline
           vector<double> pts_x, pts_y;
 
