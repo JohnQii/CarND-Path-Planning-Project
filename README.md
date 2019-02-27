@@ -13,8 +13,8 @@ Get the cubic spline by `spline` [lib](https://kluge.in-chemnitz.de/opensource/s
 ### 5. Get final path points.
 Use the speed to calculate distance between two points, and publish the path by Json.
 Here is some results:
-[successful_image1]
-[successful_image2]
+![alt text][successful_image1]
+![alt text][successful_image2]
 ### Simulator.
 I download the simulator from [udacity]((https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2))
 
