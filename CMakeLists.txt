@@ -8,17 +8,8 @@ set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 file(GLOB headrs src/*.h)
 file(GLOB sources src/*.cpp)
-# debug
-SET (CMAKE_BUILD_TYPE Debug CACHE INTERNAL "" FORCE)
 
-#eigen
-set(EIGEN_INCLUDE_DIR "/usr/include/eigen3")
-find_package(Eigen3 REQUIRED)
-IF( NOT EIGEN_INCLUDE_DIR )
-MESSAGE( FATAL_ERROR "Please point the environment variable EIGEN_INCLUDE_DIR
-    to the include directory of your Eigen3 installation.")
-ENDIF()
-include_directories(${EIGEN_INCLUDE_DIRS})
+
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
