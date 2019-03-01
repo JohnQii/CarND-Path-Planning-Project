@@ -178,9 +178,10 @@ int main() {
             pts_y[i] = (shift_x * sin(0-ref_yaw) + shift_y * cos(0-ref_yaw));
           }
           //now let's create the spline from pts.
+          std::cout << "pts'size: " << pts_x.size() << std::endl;
           tk::spline splines;
           splines.set_points(pts_x, pts_y);
-
+          std::cout << "Test on spline(30)" << splines(30.) << std::endl;
           vector<double> next_x_vals;
           vector<double> next_y_vals;
           for(int i = 0; i < previous_path_x.size(); ++i) {
@@ -235,7 +236,7 @@ int main() {
           msgJson["next_y"] = next_y_vals;
 
           auto msg = "42[\"control\","+ msgJson.dump()+"]";
-
+          std::cout << "send msgs by uWs and use josn" << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }  // end "telemetry" if
       } else {
