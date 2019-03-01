@@ -25,11 +25,15 @@ int main() {
   vector<double> map_waypoints_dy;
 
   // Waypoint map to read from
-  string map_file_ = "../CarND-Path-Planning-Project/data/highway_map.csv";
+  string map_file_ = "../data/highway_map.csv";
   // The max s value before wrapping around the track back to 0
   double max_s = 6945.554;
 
   std::ifstream in_map_(map_file_.c_str(), std::ifstream::in);
+  if(!in_map_.is_open()) {
+    std::cerr << "Error in open the map in the path : " << map_file_;
+    return -1;
+  }
 
   string line;
   while (getline(in_map_, line)) {
@@ -181,7 +185,6 @@ int main() {
           std::cout << "pts'size: " << pts_x.size() << std::endl;
           tk::spline splines;
           splines.set_points(pts_x, pts_y);
-          std::cout << "Test on spline(30)" << splines(30.) << std::endl;
           vector<double> next_x_vals;
           vector<double> next_y_vals;
           for(int i = 0; i < previous_path_x.size(); ++i) {
